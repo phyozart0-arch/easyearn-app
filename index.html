@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyEarn - Premium Earning App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Poppins', sans-serif; background: #0f172a; }
+        .tab-content, .app-screen { display: none; }
+        .active-screen { display: block !important; }
+        .active-flex-screen { display: flex !important; }
+        .active-tab { display: block !important; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen">
+
+    <div id="auth-screen" class="app-screen active-flex-screen min-h-screen flex flex-col justify-center items-center px-6 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900">
+        <div class="w-full max-w-md glass-card p-8 rounded-3xl shadow-2xl">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-indigo-500/20 text-indigo-400 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-3 border border-indigo-500/30 shadow-lg">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+                <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">EasyEarn</h1>
+                <p class="text-xs text-slate-400 mt-1">အကောင့်ဝင်ပြီး ဝင်ငွေစတင်ရှာဖွေပါ</p>
+            </div>
+
+            <div class="flex bg-slate-950/50 p-1 rounded-xl mb-6 border border-slate-800">
+                <button id="tab-login-btn" onclick="playSound('click'); toggleAuthForm('login')" class="w-1/2 py-2.5 text-sm font-bold rounded-lg bg-indigo-600 text-white shadow-md">Login</button>
+                <button id="tab-register-btn" onclick="playSound('click'); toggleAuthForm('register')" class="w-1/2 py-2.5 text-sm font-bold rounded-lg text-slate-400">Register</button>
+            </div>
+
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase mb-2">Email လိပ်စာ</label>
+                        <input type="email" id="login-email" required placeholder="example@gmail.com" class="w-full bg-slate-900/60 border border-slate-700 rounded-xl p-3.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase mb-2">Password</label>
+                        <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-slate-900/60 border border-slate-700 rounded-xl p-3.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <button type="submit" onclick="playSound('click')" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold py-3.5 rounded-xl shadow-lg mt-2">အကောင့်ဝင်မည်</button>
+                </div>
+            </form>
+
+            <form id="register-form" onsubmit="handleRegister(event)" class="hidden">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase mb-2">အမည် (Username)</label>
+                        <input type="text" id="register-name" required placeholder="Phyo Zart" class="w-full bg-slate-900/60 border border-slate-700 rounded-xl p-3.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase mb-2">Email လိပ်စာ</label>
+                        <input type="email" id="register-email" required placeholder="example@gmail.com" class="w-full bg-slate-900/60 border border-slate-700 rounded-xl p-3.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase mb-2">Password စကားဝှက်</label>
+                        <input type="password" id="register-password" required placeholder="အနည်းဆုံး ၆ လုံး" minlength="6" class="w-full bg-slate-900/60 border border-slate-700 rounded-xl p-3.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <button type="submit" onclick="playSound('click')" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold py-3.5 rounded-xl shadow-lg mt-2">အကောင့်သစ်ဖွင့်မည်</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="main-app-screen" class="app-screen pb-28 bg-slate-900 min-h-screen">
+        
+        <div class="bg-gradient-to-b from-indigo-900 via-indigo-950 to-slate-900 px-6 pt-6 pb-20 rounded-b-[2.5rem] shadow-xl relative border-b border-indigo-500/10">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h1 class="text-xl font-bold text-white flex items-center gap-2">မင်္ဂလာပါ, <span id="display-name" class="text-cyan-400">User</span> 👋</h1>
+                    <p class="text-xs text-indigo-300/80 mt-0.5">ဒီနေ့အတွက် ဝင်ငွေရှာကြစို့</p>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-cyan-400 p-0.5 shadow-md cursor-pointer" onclick="playSound('click'); switchTab('profile')">
+                    <div class="w-full h-full bg-slate-900 rounded-full flex items-center justify-center text-white text-sm font-bold" id="header-avatar">U</div>
+                </div>
+            </div>
+            
+            <div class="absolute bottom-[-40px] left-6 right-6 glass-card p-5 rounded-2xl shadow-2xl flex justify-between items-center z-10">
+                <div>
+                    <p class="text-xs text-slate-400 font-medium uppercase tracking-wider">သင်၏ လက်ရှိ Balance</p>
+                    <div class="flex items-center gap-2 mt-1">
+                        <i class="fa-solid fa-coins text-amber-400 text-2xl animate-pulse"></i>
+                        <span id="user-points" class="text-3xl font-extrabold text-white">0</span>
+                        <span class="text-slate-400 text-xs font-semibold">Points</span>
+                    </div>
+                    <p class="text-xs text-emerald-400 mt-1 font-semibold">
+                        <i class="fa-solid fa-money-bill-wave text-[10px]"></i> ≈ <span id="converted-cash">0</span> MMK
+                    </p>
+                </div>
+                <button onclick="playSound('click'); switchTab('withdraw')" class="bg-gradient-to-r from-cyan-500 to-indigo-500 text-white px-5 py-3 rounded-xl font-bold shadow-lg text-sm">ငွေထုတ်ရန်</button>
+            </div>
+        </div>
+
+        <div id="home" class="tab-content active-tab px-6 mt-16">
+            <div class="bg-gradient-to-r from-amber-500 to-orange-600 text-white p-4 rounded-2xl shadow-lg flex justify-between items-center mb-6 border border-amber-400/20">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-lg"><i class="fa-solid fa-calendar-check animate-bounce"></i></div>
+                    <div>
+                        <h3 class="font-bold text-base">Daily Check-in</h3>
+                        <p class="text-[11px] text-amber-100/90">နေ့စဉ် ဝင်ရောက်ရုံဖြင့် +50 Points ရယူပါ</p>
+                    </div>
+                </div>
+                <button id="btn-checkin" onclick="dailyCheckIn()" class="bg-white text-orange-600 font-bold px-4 py-2 rounded-xl shadow-md text-xs">
+                    Claim Now
+                </button>
+            </div>
+
+            <h2 class="text-md font-bold text-slate-300 uppercase tracking-wider mb-3">ဝင်ငွေရှာရန် နည်းလမ်းများ</h2>
+            <div class="grid grid-cols-1 gap-4 mb-6">
+                <div onclick="playSound('click'); switchTab('spin')" class="glass-card p-4 rounded-xl shadow-sm flex items-center justify-between cursor-pointer border border-slate-800 hover:border-indigo-500/40 transition group">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-indigo-500/10 p-3 rounded-xl text-indigo-400 group-hover:scale-110 transition"><i class="fa-solid fa-circle-notch text-2xl"></i></div>
+                        <div>
+                            <h4 class="font-bold text-white text-sm">Lucky Spin (ဘီးလှည့်ပါ)</h4>
+                            <p class="text-xs text-slate-400" id="spin-limit-status">ကျန်ရှိလှည့်ခွင့်: ၅ ကြိမ်</p>
+                        </div>
+                    </div>
+                    <span class="bg-indigo-500/10 text-indigo-300 font-bold text-[10px] px-2.5 py-1 rounded-full">+100 Pts Max</span>
+                </div>
+
+                <div onclick="watchAd()" class="glass-card p-4 rounded-xl shadow-sm flex items-center justify-between cursor-pointer border border-slate-800 hover:border-cyan-500/40 transition group">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-cyan-500/10 p-3 rounded-xl text-cyan-400 group-hover:scale-110 transition"><i class="fa-solid fa-circle-play text-2xl"></i></div>
+                        <div>
+                            <h4 class="font-bold text-white text-sm">Watch Video Ads</h4>
+                            <p class="text-xs text-slate-400">ဗီဒီယိုကြော်ငြာကြည့်ပြီး Point ယူပါ</p>
+                        </div>
+                    </div>
+                    <span class="bg-cyan-500/10 text-cyan-300 font-bold text-[10px] px-2.5 py-1 rounded-full">+30 Pts</span>
+                </div>
+            </div>
+
+            <div class="glass-card p-5 rounded-2xl border border-slate-800 shadow-md">
+                <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-trophy text-amber-400"></i> Top Earners (ဂုဏ်ပြုမှတ်တမ်း)
+                </h3>
+                <div id="leaderboard-list" class="space-y-3">
+                    <p class="text-xs text-slate-400 text-center py-2">လူကြီးမင်းများစာရင်း ဆွဲထုတ်နေသည်...</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="spin" class="tab-content px-6 mt-16 text-center">
+            <h2 class="text-xl font-bold text-white mb-1">Lucky Wheel</h2>
+            <p class="text-xs text-slate-400 mb-2" id="wheel-count-display">ယနေ့အတွက် လှည့်ခွင့်ကျန်ရက်: ၅ ကြိမ်</p>
+            
+            <div class="relative w-72 h-72 mx-auto mb-8 flex items-center justify-center">
+                <div class="absolute top-0 z-20 text-3xl text-amber-400 drop-shadow-md">▼</div>
+                <canvas id="wheel-canvas" width="280" height="280" class="rounded-full shadow-2xl transition-transform duration-[4000ms] cubic-bezier(0.1, 0.8, 0.1, 1)"></canvas>
+                <div class="absolute w-12 h-12 bg-slate-950 rounded-full border-4 border-white shadow-lg flex items-center justify-center z-10">
+                    <div class="w-3 h-3 bg-indigo-500 rounded-full"></div>
+                </div>
+            </div>
+            
+            <button onclick="startSpin()" id="btn-spin" class="w-full max-w-xs bg-gradient-to-r from-indigo-600 to-cyan-500 text-white font-bold py-3.5 rounded-xl shadow-lg text-sm uppercase tracking-wider">
+                စလှည့်မည်
+            </button>
+        </div>
+
+        <div id="withdraw" class="tab-content px-6 mt-16">
+            <h2 class="text-lg font-bold text-white mb-4 uppercase tracking-wider text-slate-300">ငွေထုတ်ယူရန် တောင်းဆိုမှု</h2>
+            <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                <form onsubmit="handleWithdraw(event)">
+                    <div class="mb-4">
+                        <label class="block text-xs font-semibold text-slate-400 uppercase mb-2">ငွေထုတ်မည့် နည်းလမ်း</label>
+                        <select id="withdraw-method" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3.5 text-sm text-white">
+                            <option value="KPay">KBZ Pay</option>
+                            <option value="WaveMoney">Wave Money</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-xs font-semibold text-slate-400 uppercase mb-2">ဖုန်းနံပါတ်</label>
+                        <input type="number" id="withdraw-phone" required placeholder="09xxxxxxxxx" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3.5 text-sm text-white focus:outline-none">
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-xs font-semibold text-slate-400 uppercase mb-2">ထုတ်မည့် Point အရေအတွက်</label>
+                        <input type="number" id="withdraw-amount" min="1000" required placeholder="အနည်းဆုံး 1000" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3.5 text-sm text-white focus:outline-none">
+                    </div>
+                    <button type="submit" onclick="playSound('click')" class="w-full bg-gradient-to-r from-cyan-500 to-indigo-600 text-white font-bold py-3.5 rounded-xl shadow-md">
+                        တောင်းဆိုမှု တင်သွင်းမည်
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div id="history" class="tab-content px-6 mt-16">
+            <h2 class="text-lg font-bold text-white mb-4 uppercase tracking-wider text-slate-300">ငွေထုတ်မှုမှတ်တမ်း</h2>
+            <div class="glass-card p-5 rounded-2xl border border-slate-800">
+                <div id="tracker-list" class="space-y-3">
+                    <p class="text-xs text-slate-400 text-center py-4">မှတ်တမ်းများ ဆွဲထုတ်နေသည်...</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="profile" class="tab-content px-6 mt-16 text-center">
+            <div class="glass-card p-6 rounded-2xl border border-slate-800 shadow-md mb-6">
+                <div class="w-20 h-20 bg-gradient-to-tr from-indigo-500 to-cyan-500 text-white rounded-full flex items-center justify-center text-3xl mx-auto mb-4 font-bold shadow-lg" id="profile-avatar">U</div>
+                <h3 class="text-lg font-bold text-white" id="profile-name">User Name</h3>
+                <p class="text-xs text-slate-400 mb-6" id="profile-email">email@gmail.com</p>
+                <button onclick="handleLogout()" class="w-full bg-rose-500/10 text-rose-400 font-bold py-3 rounded-xl border border-rose-500/20">အကောင့်မှ ထွက်မည်</button>
+            </div>
+        </div>
+
+        <div class="fixed bottom-0 left-0 right-0 bg-slate-950/80 backdrop-blur-lg border-t border-slate-800 px-4 py-3 flex justify-between items-center shadow-2xl z-50">
+            <button onclick="playSound('click'); switchTab('home')" class="nav-btn text-indigo-400 flex flex-col items-center gap-1 w-1/5"><i class="fa-solid fa-house text-base"></i><span class="text-[9px] font-medium">ပင်မ</span></button>
+            <button onclick="playSound('click'); switchTab('spin')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-1/5"><i class="fa-solid fa-circle-notch text-base"></i><span class="text-[9px] font-medium">ကံစမ်းမဲ</span></button>
+            <button onclick="playSound('click'); switchTab('withdraw')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-1/5"><i class="fa-solid fa-wallet text-base"></i><span class="text-[9px] font-medium">ငွေထုတ်</span></button>
+            <button onclick="playSound('click'); switchTab('history')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-1/5"><i class="fa-solid fa-clock-rotate-left text-base"></i><span class="text-[9px] font-medium">မှတ်တမ်း</span></button>
+            <button onclick="playSound('click'); switchTab('profile')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-1/5"><i class="fa-solid fa-user text-base"></i><span class="text-[9px] font-medium">ပရိုဖိုင်</span></button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCXpyIa6qHaGtVCCH0a9zXTPBaBeok3ULg",
+            authDomain: "m-ai-6da60.firebaseapp.com",
+            databaseURL: "https://m-ai-6da60-default-rtdb.firebaseio.com",
+            projectId: "m-ai-6da60",
+            storageBucket: "m-ai-6da60.firebasestorage.app",
+            messagingSenderId: "307500596516",
+            appId: "1:307500596516:web:a32b10d3779944b47bc7b1",
+            measurementId: "G-K8RE36HQVM"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let currentUser = null;
+        let userPoints = 0;
+        let isSpinning = false;
+        let currentSpinCount = 5; 
+
+        // Sound System
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                const now = audioCtx.currentTime;
+
+                if (type === 'click') {
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(600, now);
+                    gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                    osc.start(now); osc.stop(now + 0.1);
+                } else if (type === 'reward') {
+                    osc.type = 'triangle'; osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.setValueAtTime(659.25, now + 0.1); osc.frequency.setValueAtTime(783.99, now + 0.2);
+                    osc.frequency.setValueAtTime(1046.50, now + 0.3); gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                    osc.start(now); osc.stop(now + 0.5);
+                } else if (type === 'spin-tick') {
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(300, now);
+                    gain.gain.setValueAtTime(0.05, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                    osc.start(now); osc.stop(now + 0.05);
+                } else if (type === 'win') {
+                    osc.type = 'sawtooth'; osc.frequency.setValueAtTime(880, now);
+                    osc.frequency.linearRampToValueAtTime(1200, now + 0.2); gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                    osc.start(now); osc.stop(now + 0.4);
+                }
+            } catch (e) { console.log(e); }
+        }
+
+        // Wheel Config
+        const options = ["10", "20", "30", "50", "70", "100"];
+        const colors = ["#4f46e5", "#06b6d4", "#7c3aed", "#0891b2", "#6366f1", "#0ea5e9"];
+        const canvas = document.getElementById("wheel-canvas");
+        const ctx = canvas.getContext("2d");
+        const arc = Math.PI / (options.length / 2);
+
+        function drawWheel() {
+            let angle = 0;
+            for (let i = 0; i < options.length; i++) {
+                ctx.fillStyle = colors[i]; ctx.beginPath(); ctx.moveTo(140, 140);
+                ctx.arc(140, 140, 135, angle, angle + arc, false); ctx.lineTo(140, 140); ctx.fill();
+                ctx.save(); ctx.fillStyle = "#ffffff"; ctx.font = "bold 14px Poppins";
+                ctx.translate(140, 140); ctx.rotate(angle + arc / 2); ctx.fillText(options[i] + " Pts", 65, 5);
+                ctx.restore(); angle += arc;
+            }
+        }
+        drawWheel();
+
+        function toggleAuthForm(type) {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const loginBtn = document.getElementById('tab-login-btn');
+            const registerBtn = document.getElementById('tab-register-btn');
+            if (type === 'login') {
+                loginForm.classList.remove('hidden'); registerForm.classList.add('hidden');
+                loginBtn.className = "w-1/2 py-2.5 text-sm font-bold rounded-lg bg-indigo-600 text-white shadow-md";
+                registerBtn.className = "w-1/2 py-2.5 text-sm font-bold rounded-lg text-slate-400";
+            } else {
+                loginForm.classList.add('hidden'); registerForm.classList.remove('hidden');
+                registerBtn.className = "w-1/2 py-2.5 text-sm font-bold rounded-lg bg-indigo-600 text-white shadow-md";
+                loginBtn.className = "w-1/2 py-2.5 text-sm font-bold rounded-lg text-slate-400";
+            }
+        }
+
+        // Auth Listener
+        auth.onAuthStateChanged(user => {
+            const authScreen = document.getElementById('auth-screen');
+            const mainAppScreen = document.getElementById('main-app-screen');
+
+            if (user) {
+                currentUser = user;
+                db.collection("users").doc(user.uid).onSnapshot(doc => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        userPoints = data.points;
+                        
+                        document.getElementById('display-name').innerText = data.username;
+                        document.getElementById('profile-name').innerText = data.username;
+                        document.getElementById('profile-email').innerText = data.email;
+                        document.getElementById('header-avatar').innerText = data.username.charAt(0).toUpperCase();
+                        document.getElementById('profile-avatar').innerText = data.username.charAt(0).toUpperCase();
+                        document.getElementById('user-points').innerText = userPoints.toLocaleString();
+                        document.getElementById('converted-cash').innerText = Math.floor(userPoints * 0.5).toLocaleString();
+
+                        const lastCheckIn = data.lastCheckIn ? data.lastCheckIn.toDate() : new Date(0);
+                        const todayStr = new Date().toDateString();
+                        
+                        const btnCheckin = document.getElementById('btn-checkin');
+                        if (todayStr === lastCheckIn.toDateString()) {
+                            btnCheckin.disabled = true; btnCheckin.innerText = "Claimed";
+                            btnCheckin.className = "bg-slate-800 text-slate-500 font-bold px-4 py-2 rounded-xl text-xs cursor-not-allowed border border-slate-700";
+                        } else {
+                            btnCheckin.disabled = false; btnCheckin.innerText = "Claim Now";
+                            btnCheckin.className = "bg-white text-orange-600 font-bold px-4 py-2 rounded-xl shadow-md text-xs";
+                        }
+
+                        const lastSpinDateStr = data.lastSpinDate ? data.lastSpinDate.toDate().toDateString() : "";
+                        if (todayStr === lastSpinDateStr) {
+                            currentSpinCount = data.spinCount !== undefined ? (5 - data.spinCount) : 5;
+                        } else {
+                            currentSpinCount = 5; 
+                        }
+                        if(currentSpinCount < 0) currentSpinCount = 0;
+                        
+                        document.getElementById('spin-limit-status').innerText = `ကျန်ရှိလှည့်ခွင့်: ${currentSpinCount} ကြိမ်`;
+                        document.getElementById('wheel-count-display').innerText = `ယနေ့အတွက် လှည့်ခွင့်ကျန်ရက်: ${currentSpinCount} ကြိမ်`;
+
+                        authScreen.style.display = 'none'; authScreen.classList.remove('active-flex-screen');
+                        mainAppScreen.style.display = 'block'; mainAppScreen.classList.add('active-screen');
+                    }
+                });
+                loadLeaderboard(); loadWithdrawTracker();
+            } else {
+                mainAppScreen.style.display = 'none'; mainAppScreen.classList.remove('active-screen');
+                authScreen.style.display = 'flex'; authScreen.classList.add('active-flex-screen');
+            }
+        });
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .then(cred => {
+                    return db.collection("users").doc(cred.user.uid).set({
+                        username: name, email: email, points: 100,
+                        lastCheckIn: new firebase.firestore.Timestamp(0, 0),
+                        spinCount: 0, lastSpinDate: new firebase.firestore.Timestamp(0, 0),
+                        createdAt: new Date()
+                    });
+                })
+                .then(() => { playSound('reward'); confetti(); alert('🎉 အကောင့်ဖွင့်ခြင်း အောင်မြင်ပြီး Bonus Point 100 ရရှိပါသည်!'); })
+                .catch(err => alert("Error: " + err.message));
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            auth.signInWithEmailAndPassword(email, password).catch(err => alert("Error: " + err.message));
+        }
+
+        function handleLogout() { if(confirm("အကောင့်မှ ထွက်မှာ သေჩာပါသလား?")) auth.signOut(); }
+
+        function dailyCheckIn() {
+            if (!currentUser) return;
+            playSound('click');
+            const btn = document.getElementById('btn-checkin');
+            btn.disabled = true; btn.innerText = "Checking...";
+
+            const userRef = db.collection("users").doc(currentUser.uid);
+            userRef.get().then(doc => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    const lastCheckIn = data.lastCheckIn ? data.lastCheckIn.toDate() : new Date(0);
+                    const todayStr = new Date().toDateString();
+
+                    if (todayStr !== lastCheckIn.toDateString()) {
+                        return userRef.update({
+                            points: firebase.firestore.FieldValue.increment(50),
+                            lastCheckIn: firebase.firestore.FieldValue.serverTimestamp()
+                        }).then(() => { playSound('reward'); confetti(); alert('🎉 Daily Check-in အောင်မြင်ပါသည်။ +50 Points ရရှိပါသည်!'); });
+                    } else {
+                        alert('⚠️ ဒီနေ့အတွက် Claim ပြီးသားဖြစ်ပါတယ်ဗျာ။ မနက်ဖြန်မှ ထပ်လာခဲ့ပေးပါ။');
+                    }
+                }
+            }).catch(err => { alert("Error: " + err.message); btn.disabled = false; btn.innerText = "Claim Now"; });
+        }
+
+        function watchAd() {
+            playSound('click'); alert('🎬 ကြော်ငြာပြသနေပါသည်... စက္ကန့် ၃၀ ပြည့်အောင် ကြည့်ပေးပါ။');
+            setTimeout(() => {
+                if (!currentUser) return;
+                db.collection("users").doc(currentUser.uid).update({ points: firebase.firestore.FieldValue.increment(30) })
+                .then(() => { playSound('reward'); confetti(); alert('💰 ကြော်ငြာကြည့်ရှုခြင်း ပြီးဆုံးပါပြီ။ +30 Points ရရှိပါသည်!'); });
+            }, 3000);
+        }
+
+        function startSpin() {
+            if (isSpinning || !currentUser) return;
+            if (currentSpinCount <= 0) {
+                alert("⚠️ ယနေ့အတွက် လှည့်ခွင့် ၅ ကြိမ်လုံး ကုန်ဆုံးသွားပါပြီ။ မနက်ဖြန်မှ ထပ်မံလှည့်နိုင်ပါမယ်။");
+                return;
+            }
+
+            isSpinning = true; playSound('click');
+            const btn = document.getElementById('btn-spin');
+            const canvasElement = document.getElementById('wheel-canvas');
+            btn.disabled = true;
+
+            const selectedIdx = Math.floor(Math.random() * options.length);
+            const value = parseInt(options[selectedIdx]);
+            const degreesPerSegment = 360 / options.length;
+            const targetRotation = 3600 + (360 - (selectedIdx * degreesPerSegment) - (degreesPerSegment / 2));
+
+            canvasElement.style.transform = `rotate(${targetRotation}deg)`;
+            let tickInterval = setInterval(() => { playSound('spin-tick'); }, 250);
+
+            setTimeout(() => {
+                clearInterval(tickInterval);
+                isSpinning = false; btn.disabled = false;
+                canvasElement.style.transition = 'none';
+                canvasElement.style.transform = `rotate(${targetRotation % 360}deg)`;
+                setTimeout(() => { canvasElement.style.transition = 'transform 4000ms cubic-bezier(0.1, 0.8, 0.1, 1)'; }, 50);
+
+                const userRef = db.collection("users").doc(currentUser.uid);
+                userRef.get().then(doc => {
+                    const data = doc.data();
+                    const todayStr = new Date().toDateString();
+                    const lastSpinDateStr = data.lastSpinDate ? data.lastSpinDate.toDate().toDateString() : "";
+                    
+                    let newCount = 1;
+                    if(todayStr === lastSpinDateStr) {
+                        newCount = (data.spinCount || 0) + 1;
+                    }
+
+                    return userRef.update({
+                        points: firebase.firestore.FieldValue.increment(value),
+                        spinCount: newCount,
+                        lastSpinDate: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }).then(() => { playSound('win'); confetti(); alert(`🎁 Lucky Spin မှ +${value} Points ကံထူးပါသည်။`); });
+
+            }, 4050);
+        }
+
+        function handleWithdraw(e) {
+            e.preventDefault();
+            const method = document.getElementById('withdraw-method').value;
+            const phone = document.getElementById('withdraw-phone').value;
+            const amount = parseInt(document.getElementById('withdraw-amount').value);
+            if (amount > userPoints) { alert('⚠️ သင့်မှာ Point လုံလောက်စွာ မရှိသေးပါ!'); return; }
+
+            db.collection("users").doc(currentUser.uid).update({ points: firebase.firestore.FieldValue.increment(-amount) })
+            .then(() => {
+                return db.collection("withdraw_requests").add({
+                    userId: currentUser.uid, username: document.getElementById('display-name').innerText,
+                    method: method, phone: phone, amount: amount, status: "Pending", requestedAt: new Date()
+                });
+            }).then(() => {
+                alert('✅ Ngwe Htot Request Successful!');
+                document.getElementById('withdraw-phone').value = ''; document.getElementById('withdraw-amount').value = '';
+                switchTab('history'); // 🌟 တန်းပြီး မှတ်တမ်း Tab ဆီ သွားမယ်
+            }).catch(err => alert("Error: " + err.message));
+        }
+
+        function loadLeaderboard() {
+            db.collection("users").orderBy("points", "desc").limit(5).onSnapshot(snapshot => {
+                const list = document.getElementById('leaderboard-list'); list.innerHTML = '';
+                let index = 1;
+                snapshot.forEach(doc => {
+                    const data = doc.data(); const item = document.createElement('div');
+                    item.className = "flex justify-between items-center bg-slate-950/40 border border-slate-800/60 p-3 rounded-xl";
+                    item.innerHTML = `<div class="flex items-center gap-3"><span class="w-5 text-xs text-slate-400 font-bold">${index}.</span><div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-indigo-400">${data.username.charAt(0).toUpperCase()}</div><span class="text-sm font-medium text-slate-200">${data.username}</span></div><span class="text-xs font-bold text-amber-400">${data.points.toLocaleString()} Pts</span>`;
+                    list.appendChild(item); index++;
+                });
+            });
+        }
+
+        // 🌟 REALTIME LISTENER FOR HISTORY PAGE
+        function loadWithdrawTracker() {
+            if (!currentUser) return;
+            
+            // 🚨 အကယ်၍ ပြဿနာတစ်ခုခုရှိခဲ့ရင် အောက်က .where() နေရာကို ဖျက်ပြီး စမ်းသပ်နိုင်ပါတယ်
+            db.collection("withdraw_requests")
+              .where("userId", "==", currentUser.uid)
+              .onSnapshot(snapshot => {
+                const list = document.getElementById('tracker-list'); list.innerHTML = '';
+                if(snapshot.empty){ list.innerHTML = '<p class="text-[11px] text-slate-500 text-center py-4">ငွေထုတ်ယူမှုမှတ်တမ်း မရှိသေးပါ</p>'; return; }
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data(); 
+                    let statusText = "Pending";
+                    let statusColor = "text-amber-400 bg-amber-500/10 border-amber-500/20";
+                    
+                    if (data.status === "Approved" || data.status === "approved" || data.status === "Success" || data.status === "success") {
+                        statusText = "Success";
+                        statusColor = "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
+                    } else if (data.status === "Rejected" || data.status === "rejected") {
+                        statusText = "Rejected";
+                        statusColor = "text-rose-400 bg-rose-500/10 border-rose-500/20";
+                    } else if (data.status === "panding" || data.status === "Pending") {
+                        statusText = "Pending";
+                        statusColor = "text-amber-400 bg-amber-500/10 border-amber-500/20";
+                    }
+
+                    // 🕒 အချိန် ပြသရန်
+                    let dateStr = "";
+                    if(data.requestedAt) {
+                        const d = data.requestedAt.toDate ? data.requestedAt.toDate() : new Date(data.requestedAt);
+                        dateStr = d.toLocaleDateString() + " " + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    }
+
+                    const item = document.createElement('div'); 
+                    item.className = "flex justify-between items-center bg-slate-950/30 p-3 border border-slate-800 rounded-xl text-xs";
+                    item.innerHTML = `<div><p class="font-bold text-slate-300">${data.method} - ${data.phone}</p><p class="text-[10px] text-slate-500 mt-0.5">${data.amount.toLocaleString()} Points • <span class="text-slate-400">${dateStr}</span></p></div><span class="px-2.5 py-1 rounded-full text-[10px] font-bold border ${statusColor}">${statusText}</span>`;
+                    list.appendChild(item);
+                });
+            }, err => { 
+                console.log(err);
+                document.getElementById('tracker-list').innerHTML = `<p class="text-[11px] text-rose-400 text-center py-4">Error: ${err.message}</p>`;
+            });
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active-tab'));
+            document.getElementById(tabId).classList.add('active-tab');
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(b => { b.classList.remove('text-indigo-400'); b.classList.add('text-slate-500'); });
+            const indexMap = { 'home': 0, 'spin': 1, 'withdraw': 2, 'history': 3, 'profile': 4 };
+            if(indexMap[tabId] !== undefined) { buttons[indexMap[tabId]].classList.remove('text-slate-500'); buttons[indexMap[tabId]].classList.add('text-indigo-400'); }
+        }
+    </script>
+</body>
+                          </html>
